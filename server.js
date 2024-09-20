@@ -7,13 +7,12 @@ import { dirname, join } from "path";
 const app = express();
 const server = createServer(app);
 const io = new Server(server);
-const port = 9000;
-const allusers = {}; // to store all the users
+const allusers = {};
 
-// Basically it will tell the projects rootpath , ex : file://your/system/path/file.html will be converted to /your/system/path
+// /your/system/path
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// exposing public to the outside world
+// exposing public directory to outside world
 app.use(express.static("public"));
 
 // handle incoming http request
@@ -25,16 +24,41 @@ app.get("/", (req, res) => {
 // handle socket connections
 io.on("connection", (socket) => {
   console.log(
-    `Someone connected to Socket Server with Socket ID : ${socket.id}`
+    `Someone connected to socket server and socket id is ${socket.id}`
   );
   socket.on("join-user", (username) => {
-    console.log(`${username} joined socket connection `);
+    console.log(`${username} joined socket connection`);
     allusers[username] = { username, id: socket.id };
-    // inform all that someone joined socket
+    // inform everyone that someone joined
     io.emit("joined", allusers);
+  });
+
+  socket.on("offer", ({ from, to, offer }) => {
+    console.log({ from, to, offer });
+    io.to(allusers[to].id).emit("offer", { from, to, offer });
+  });
+
+  socket.on("answer", ({ from, to, answer }) => {
+    io.to(allusers[from].id).emit("answer", { from, to, answer });
+  });
+
+  socket.on("end-call", ({ from, to }) => {
+    io.to(allusers[to].id).emit("end-call", { from, to });
+  });
+
+  socket.on("call-ended", (caller) => {
+    const [from, to] = caller;
+    io.to(allusers[from].id).emit("call-ended", caller);
+    io.to(allusers[to].id).emit("call-ended", caller);
+  });
+
+  socket.on("icecandidate", (candidate) => {
+    console.log({ candidate });
+    //broadcast to other peers
+    socket.broadcast.emit("icecandidate", candidate);
   });
 });
 
-server.listen(port, () => {
-  console.log(`Server is Listening on Port ${port}`);
+server.listen(9000, () => {
+  console.log(`Server listening on port 9000`);
 });
