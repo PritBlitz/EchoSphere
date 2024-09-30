@@ -1,6 +1,6 @@
-# PP-meet 🎥💬
+# EchoSphere 🎥💬
 
-**PP-meet** is a real-time video communication application built using **Socket.io**, **WebRTC**, and a basic **Node.js** backend with **Express**. This app allows users to connect and have video calls across multiple devices, such as phones, desktops, or a combination of both. Using **ngrok**, it can easily function across different devices even when they are on different networks.
+**EchoSphere** is a real-time video communication application built using **Socket.io**, **WebRTC**, and a basic **Node.js** backend with **Express**. This app allows users to connect and have video calls across multiple devices, such as phones, desktops, or a combination of both. Using **ngrok**, it can easily function across different devices even when they are on different networks.
 
 ## 🚀 Features
 
